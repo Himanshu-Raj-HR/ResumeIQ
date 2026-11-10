@@ -1,0 +1,10 @@
+venvapp/
+__pycache__/
+.DS_Store
+*.pyc
+Uploaded_Resumes/
+# macOS
+.DS_Store
+
+# Local backup
+App_backup_v2.py
