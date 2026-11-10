@@ -651,12 +651,32 @@ def run():
                                 st.write("All extracted skills match the job description!")
                     else:
                         st.caption("Paste a job description above to evaluate keyword overlap and identify skill gaps instantly.")
-                        
+
                 with tab3:
-                    st.markdown("#### 🚀 Recommended Next Steps & Career Growth")
-                    st.write(f"• **Domain Focus:** {reco_field if reco_field else 'General Software Engineering'}")
-                    st.write(f"• **Candidate Level:** {cand_level}")
-                    st.write("• **Action Plan:** Complete missing certifications and add quantifiable impact metrics (e.g., 'Improved performance by 30%') to your project bullet points.")
+                    st.markdown("#### 🚀 AI Interview Prep & Career Roadmap")
+                    
+                    col_r1, col_r2 = st.columns(2)
+                    with col_r1:
+                        st.markdown("##### 💡 Technical Interview Focus Areas")
+                        if reco_field == 'Data Science':
+                            st.write("• Prepare for questions on **Machine Learning algorithms**, overfitting, regularization, and SQL joins.")
+                            st.write("• Be ready to explain your model evaluation metrics (Precision, Recall, F1-Score).")
+                        elif reco_field == 'Web Development':
+                            st.write("• Brush up on **RESTful APIs**, state management, asynchronous JavaScript, and database indexing.")
+                            st.write("• Prepare system design concepts for scalable web architectures.")
+                        else:
+                            st.write("• Focus on core computer science fundamentals: **Data Structures & Algorithms** and system design.")
+                            st.write("• Review past project architectural decisions and code optimizations.")
+                            
+                    with col_r2:
+                        st.markdown("##### 📈 Strategic Growth Roadmap")
+                        st.write(f"• **Target Domain:** {reco_field if reco_field else 'Software Engineering'}")
+                        st.write(f"• **Experience Tier:** {cand_level}")
+                        st.write("• **Action Plan:** Add quantifiable impact metrics (e.g., 'Reduced latency by 30%') to your project bullet points.")
+                        
+                    st.markdown("---")
+                    st.markdown("##### ❓ Sample Evaluator / Technical Viva Questions")
+                    st.info("1. *'Can you walk through the most complex bug you solved in your featured project?'*\n2. *'How does your resume layout ensure fast parsing by Applicant Tracking Systems (ATS)?'*")
 
                 st.warning("** Note: This evaluation is generated locally using the ResumeIQ ATS audit engine. **")
 
