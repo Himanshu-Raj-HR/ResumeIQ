@@ -17,7 +17,6 @@ import getpass
 import plotly.express as px
 import plotly.graph_objects as go
 from geopy.geocoders import Nominatim
-from pyresparser import ResumeParser
 from pdfminer3.layout import LAParams, LTTextBox
 from pdfminer3.pdfpage import PDFPage
 from pdfminer3.pdfinterp import PDFResourceManager
@@ -29,13 +28,17 @@ from Courses import ds_course, web_course, android_course, ios_course, uiux_cour
 import nltk
 
 # ==========================================
-# 1. NLTK DEPENDENCY GUARD
+# 1. NLTK DEPENDENCY GUARD (MUST BE BEFORE PYRESPARSER)
 # ==========================================
 for resource in ['stopwords', 'punkt']:
     try:
         nltk.data.find(f'corpora/{resource}')
     except LookupError:
         nltk.download(resource, quiet=True)
+
+# 2. NOW IT IS SAFE TO IMPORT PYRESPARSER
+from pyresparser import ResumeParser
+
 
 # ==========================================
 # 2. HIGH-IMPACT UI THEME INJECTION (CSS)
