@@ -209,6 +209,7 @@ st.set_page_config(
 
 
 ###### Main function run() ######
+
 def run():
     img = Image.open('./Logo/RESUM.png')
     st.image(img)
