@@ -37,7 +37,7 @@ for resource in ['stopwords', 'punkt']:
         nltk.download(resource, quiet=True)
 
 # ==========================================
-# 2. ROBUST SPACY LOAD PATCH FOR PYRESPARSER
+# 2. SPACY V3 & PYRESPARSER COMPATIBILITY PATCH
 # ==========================================
 import spacy
 import os
@@ -52,11 +52,38 @@ def _patched_spacy_load(name, **kwargs):
 
 spacy.load = _patched_spacy_load
 
+# Fix spaCy v3 matcher compatibility error in pyresparser
+import pyresparser.utils as pyres_utils
+
+def patched_extract_name(nlp_text, matcher=None):
+    from spacy.matcher import Matcher
+    if matcher is None:
+        matcher = Matcher(nlp_text.vocab)
+    
+    patterns = [
+        [{'POS': 'PROPN'}, {'POS': 'PROPN'}],
+        [{'POS': 'PROPN'}, {'POS': 'PROPN'}, {'POS': 'PROPN'}],
+        [{'POS': 'PROPN'}, {'POS': 'PROPN'}, {'POS': 'PROPN'}, {'POS': 'PROPN'}]
+    ]
+    
+    try:
+        matcher.add('NAME', patterns)
+    except TypeError:
+        for pat in patterns:
+            matcher.add('NAME', [pat])
+            
+    matches = matcher(nlp_text)
+    for _, start, end in matches:
+        span = nlp_text[start:end]
+        return span.text
+    return None
+
+pyres_utils.extract_name = patched_extract_name
+
 # ==========================================
 # 3. NOW IMPORT PYRESPARSER
 # ==========================================
 from pyresparser import ResumeParser
-
 
 ###### Preprocessing functions ######
 
@@ -260,7 +287,7 @@ def run():
     else:
         id_col_def = "ID INTEGER PRIMARY KEY AUTOINCREMENT"
         pk_def = ""
-        
+
     # Create table user_data
     DB_table_name = 'user_data'
     table_sql = f"""CREATE TABLE IF NOT EXISTS {DB_table_name} (
