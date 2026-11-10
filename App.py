@@ -1,16 +1,5 @@
 # Developed by Himanshu Raj [https://github.com/Himanshu-Raj-HR/ResumeIQ] | Made with Streamlit
-import streamlit as st
-import nltk
 
-# Automatically download required NLTK data on cloud boot
-for resource in ['stopwords', 'punkt']:
-    try:
-        nltk.data.find(f'corpora/{resource}')
-    except LookupError:
-        nltk.download(resource, quiet=True)
-
-from pyresparser import ResumeParser
-# ... rest of your imports and code
 ###### Packages Used ######
 import streamlit as st
 import pandas as pd
@@ -39,7 +28,56 @@ from PIL import Image
 from Courses import ds_course, web_course, android_course, ios_course, uiux_course, resume_videos, interview_videos
 import nltk
 
-nltk.download('stopwords', quiet=True)
+# ==========================================
+# 1. NLTK DEPENDENCY GUARD
+# ==========================================
+for resource in ['stopwords', 'punkt']:
+    try:
+        nltk.data.find(f'corpora/{resource}')
+    except LookupError:
+        nltk.download(resource, quiet=True)
+
+# ==========================================
+# 2. HIGH-IMPACT UI THEME INJECTION (CSS)
+# ==========================================
+st.markdown("""
+<style>
+    /* Global Dark Theme & Background */
+    .stApp {
+        background-color: #0e1117;
+        color: #f0f2f6;
+    }
+    
+    /* Sleek Header Styling */
+    h1, h2, h3 {
+        font-family: 'Inter', sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+    
+    /* Glassmorphism Cards for Metrics & Results */
+    .metric-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        backdrop-filter: blur(4px);
+        text-align: center;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .metric-card:hover {
+        transform: translateY(-3px);
+        border-color: #00adb5;
+    }
+    
+    /* Custom Sidebar Polish */
+    [data-testid="stSidebar"] {
+        background-color: #161b22;
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+</style>
+""", unsafe_allow_html=True)
 
 
 ###### Preprocessing functions ######
@@ -585,16 +623,35 @@ def run():
                             st.write("All criteria met successfully!")
 
                 with tab2:
-                    st.markdown("#### 🎯 Target Job Description (JD) Matcher")
+                    st.markdown("#### 🎯 Target Job Description (JD) Matcher & Skill Gap Analysis")
                     target_jd = st.text_area("Paste target job description here to check keyword match:", placeholder="Paste job requirements, tech stack, and responsibilities...")
+                    
                     if target_jd:
                         jd_lower = target_jd.lower()
                         matched_keywords = [word for word in extracted_skills if word.lower() in jd_lower]
+                        missing_keywords = [word for word in extracted_skills if word.lower() not in jd_lower]
                         match_pct = int((len(matched_keywords) / max(len(extracted_skills), 1)) * 100)
-                        st.info(f"**Estimated JD Match: {match_pct}%** (Matched {len(matched_keywords)} out of {len(extracted_skills)} extracted skills)")
+                        
+                        st.metric("Job Description Compatibility", f"{match_pct}%", "ATS Keyword Overlap")
+                        
+                        col_m1, col_m2 = st.columns(2)
+                        with col_m1:
+                            st.markdown("##### ✅ Matched Keywords")
+                            if matched_keywords:
+                                for mk in matched_keywords:
+                                    st.write(f"• `{mk}`")
+                            else:
+                                st.write("No direct skill keywords matched.")
+                        with col_m2:
+                            st.markdown("##### ⚠️ Missing / Suggested Keywords")
+                            if missing_keywords:
+                                for mik in missing_keywords:
+                                    st.write(f"• `{mik}`")
+                            else:
+                                st.write("All extracted skills match the job description!")
                     else:
-                        st.caption("Paste a job description above to evaluate keyword overlap against your resume instantly.")
-
+                        st.caption("Paste a job description above to evaluate keyword overlap and identify skill gaps instantly.")
+                        
                 with tab3:
                     st.markdown("#### 🚀 Recommended Next Steps & Career Growth")
                     st.write(f"• **Domain Focus:** {reco_field if reco_field else 'General Software Engineering'}")
