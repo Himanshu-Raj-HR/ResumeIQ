@@ -28,7 +28,7 @@ from Courses import ds_course, web_course, android_course, ios_course, uiux_cour
 import nltk
 
 # ==========================================
-# 1. NLTK DEPENDENCY GUARD (MUST BE BEFORE PYRESPARSER)
+# 1. NLTK DEPENDENCY GUARD
 # ==========================================
 for resource in ['stopwords', 'punkt']:
     try:
@@ -36,9 +36,45 @@ for resource in ['stopwords', 'punkt']:
     except LookupError:
         nltk.download(resource, quiet=True)
 
-# 2. NOW IT IS SAFE TO IMPORT PYRESPARSER
-from pyresparser import ResumeParser
+# ==========================================
+# 2. PYRESPARSER SPACY PATH PATCH (ADD HERE)
+# ==========================================
+import pyresparser.resume_parser
+import spacy
+from spacy.matcher import Matcher
+from pyresparser import utils
 
+def patched_init(self, resume, skills_file=None, custom_regex=None):
+    nlp = spacy.load('en_core_web_sm')
+    try:
+        custom_nlp = spacy.load('en_core_web_sm')
+    except Exception:
+        custom_nlp = nlp
+    self.__skills_file = skills_file
+    self.__custom_regex = custom_regex
+    self.__matcher = Matcher(nlp.vocab)
+    self.__details = {
+        'name': None, 'email': None, 'mobile_number': None, 'skills': None,
+        'college_name': None, 'degree': None, 'designation': None, 
+        'company_names': None, 'experience': None, 'total_experience': None, 'no_of_pages': None
+    }
+    self.__resume = resume
+    if not isinstance(self.__resume, io.BytesIO):
+        ext = os.path.splitext(self.__resume)[1].split('.')[1]
+    else:
+        ext = self.__resume.name.split('.')[1]
+    self.__text_raw = utils.extract_text(self.__resume, '.' + ext)
+    self.__text = ' '.join(self.__text_raw.split())
+    self.__nlp = nlp(self.__text)
+    self.__custom_nlp = custom_nlp(self.__text_raw)
+    self.__noun_chunks = list(self.__nlp.noun_chunks)
+    self.__get_basic_details()
+
+pyresparser.resume_parser.ResumeParser.__init__ = patched_init
+
+# ==========================================
+# 3. REST OF YOUR APP CODE (run(), etc.)
+# ==========================================
 
 # ==========================================
 # 2. HIGH-IMPACT UI THEME INJECTION (CSS)
