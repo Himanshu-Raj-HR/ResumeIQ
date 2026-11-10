@@ -1,5 +1,16 @@
 # Developed by Himanshu Raj [https://github.com/Himanshu-Raj-HR/ResumeIQ] | Made with Streamlit
+import streamlit as st
+import nltk
 
+# Automatically download required NLTK data on cloud boot
+for resource in ['stopwords', 'punkt']:
+    try:
+        nltk.data.find(f'corpora/{resource}')
+    except LookupError:
+        nltk.download(resource, quiet=True)
+
+from pyresparser import ResumeParser
+# ... rest of your imports and code
 ###### Packages Used ######
 import streamlit as st
 import pandas as pd
