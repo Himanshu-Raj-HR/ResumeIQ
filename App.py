@@ -29,6 +29,12 @@ from streamlit_tags import st_tags
 from PIL import Image
 from Courses import ds_course, web_course, android_course, ios_course, uiux_course, resume_videos, interview_videos
 import nltk
+# ... (your other imports) ...
+
+# ==========================================
+# IMPORT CUSTOM ANIMATIONS & UI MODULES
+# ==========================================
+from animations import load_futuristic_animations, render_futuristic_header 
 
 # ==========================================
 # 1. NLTK DEPENDENCY GUARD
@@ -285,6 +291,8 @@ def run():
     # ==========================================
     # HIGH-IMPACT UI THEME INJECTION (CSS)
     # ==========================================
+    load_futuristic_animations()
+
     st.markdown("""
     <style>
         /* Global Dark Theme & Background */
@@ -455,7 +463,7 @@ def run():
             if resume_data:
                 resume_text = pdf_reader(save_image_path)
 
-                st.header("**Resume Analysis 🤘**")
+               render_futuristic_header("RESUME ANALYSIS // NEURAL EVALUATION")
                 st.success("Hello " + str(resume_data.get('name', '')))
                 st.subheader("**Your Basic info 👀**")
                 try:
