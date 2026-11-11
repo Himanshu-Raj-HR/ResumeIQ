@@ -34,8 +34,12 @@ import nltk
 # ==========================================
 # IMPORT CUSTOM ANIMATIONS & UI MODULES
 # ==========================================
-from animations import load_futuristic_animations, render_futuristic_header 
-from animations import load_futuristic_animations, render_futuristic_header, render_interactive_hud_graph
+from animations import (
+    load_futuristic_animations, 
+    render_futuristic_header, 
+    render_interactive_hud_graph, 
+    render_cyberpunk_title_intro
+)
 
 
 # ==========================================
@@ -333,7 +337,7 @@ def run():
         }
     </style>
     """, unsafe_allow_html=True)
-    
+
     if os.path.exists('./Logo/RESUM.png'):
         img = Image.open('./Logo/RESUM.png')
         st.image(img)
