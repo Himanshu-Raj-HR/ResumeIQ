@@ -1,10 +1,14 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
+import streamlit as st
+import streamlit.components.v1 as components
+
 def render_landing_page():
-    """Renders the full-screen cyberpunk 3D landing page."""
+    """Renders the full-screen cyberpunk 3D landing page and ensures sidebar is hidden on landing."""
     st.markdown("""
     <style>
+        /* Hide sidebar ONLY on the landing page */
         [data-testid="stSidebar"], [data-testid="collapsedControl"] {
             display: none !important;
         }
@@ -16,6 +20,7 @@ def render_landing_page():
     </style>
     """, unsafe_allow_html=True)
 
+    # Rest of your component HTML stays exactly the same...
     components.html("""
     <!DOCTYPE html>
     <html>
