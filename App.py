@@ -40,7 +40,7 @@ from animations import (
     render_interactive_hud_graph, 
     render_cyberpunk_title_intro
 )
-
+from landing import render_landing_page
 
 # ==========================================
 # 1. NLTK DEPENDENCY GUARD
@@ -1006,3 +1006,29 @@ def run():
 
 
 run()
+
+# ==========================================
+# MODULE-BASED LANDING PAGE CONTROLLER
+# ==========================================
+if 'entered_dashboard' not in st.session_state:
+    st.session_state.entered_dashboard = False
+
+if not st.session_state.entered_dashboard:
+    load_futuristic_animations()
+    render_landing_page()
+    
+    col1, col2, col3 = st.columns([1, 1.4, 1])
+    with col2:
+        if st.button("⚡ ENTER NEURAL ATS DASHBOARD // LAUNCH", use_container_width=True):
+            st.session_state.entered_dashboard = True
+            st.rerun()
+else:
+    if st.sidebar.button("🏠 EXIT TO CYBER LANDING"):
+        st.session_state.entered_dashboard = False
+        st.rerun()
+    
+    # This executes your existing login check and run logic
+    if auth_success:  # (Keep whatever your variable name is for successful login/auth)
+        run()
+    else:
+        st.error("Wrong ID & Password Provided")
