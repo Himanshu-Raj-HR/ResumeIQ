@@ -386,3 +386,55 @@ def render_interactive_hud_graph(score=85):
     """.replace("SCORE_VAL", str(score))
     
     components.html(html_code, height=195)
+
+
+def render_cyberpunk_title_intro():
+    """Renders an animated, glowing matrix title intro for ResumeIQ."""
+    components.html("""
+    <div style="
+        background: radial-gradient(circle, rgba(0,245,212,0.08) 0%, rgba(7,9,14,0.95) 80%);
+        border: 1px solid rgba(0, 245, 212, 0.4);
+        border-radius: 16px;
+        padding: 30px;
+        text-align: center;
+        font-family: monospace;
+        box-shadow: 0 0 35px rgba(0, 245, 212, 0.2);
+        margin-bottom: 25px;
+        position: relative;
+        overflow: hidden;
+    ">
+        <div style="
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, #00f5d4, transparent);
+            animation: scanlineMove 3s linear infinite;
+        "></div>
+
+        <h1 style="
+            color: #f0f2f6;
+            font-size: 2.8rem;
+            letter-spacing: 6px;
+            margin: 0;
+            text-shadow: 0 0 15px rgba(0, 245, 212, 0.6), 0 0 30px rgba(0, 173, 181, 0.4);
+        ">
+            RESUME<span style="color: #00f5d4;">IQ</span>
+        </h1>
+        
+        <p style="
+            color: #39ff14;
+            font-size: 13px;
+            letter-spacing: 3px;
+            margin-top: 10px;
+            text-shadow: 0 0 8px rgba(57, 255, 20, 0.6);
+        ">
+            // NEXT-GEN AI CAREER & NEURAL RESUME ANALYZER
+        </p>
+    </div>
+
+    <style>
+    @keyframes scanlineMove {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+    </style>
+    """, height=140)
