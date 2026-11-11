@@ -463,7 +463,7 @@ def run():
             if resume_data:
                 resume_text = pdf_reader(save_image_path)
 
-               render_futuristic_header("RESUME ANALYSIS // NEURAL EVALUATION")
+                render_futuristic_header("RESUME ANALYSIS // NEURAL EVALUATION")
                 st.success("Hello " + str(resume_data.get('name', '')))
                 st.subheader("**Your Basic info 👀**")
                 try:
