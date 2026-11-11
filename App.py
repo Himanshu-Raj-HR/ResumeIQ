@@ -380,10 +380,8 @@ def run():
             
             # Display the PDF preview
             show_pdf(save_image_path)
+            
 
-        #updateed here 11nov - pdf showing problem 
-
-        
             os.makedirs('./Uploaded_Resumes', exist_ok=True)
             save_image_path = './Uploaded_Resumes/' + pdf_file.name
             pdf_name = pdf_file.name
