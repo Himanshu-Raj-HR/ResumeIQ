@@ -376,9 +376,9 @@ def run():
             state = ''
             country = ''
 
-        st.markdown('''<h5 style='text-align: left; color: #021659;'> Upload Your Resume, And Get Smart Recommendations</h5>''', unsafe_allow_html=True)
+       st.markdown('''<h5 style='text-align: left; color: #021659;'> Upload Your Resume, And Get Smart Recommendations</h5>''', unsafe_allow_html=True)
 
-       pdf_file = st.file_uploader("Choose your Resume", type=["pdf"])
+        pdf_file = st.file_uploader("Choose your Resume", type=["pdf"])
         if pdf_file is not None:
             with st.spinner('Hang On While We Cook Magic For You...'):
                 time.sleep(2)
@@ -389,10 +389,12 @@ def run():
             with open(save_image_path, "wb") as f:
                 f.write(pdf_file.getbuffer())
             
-            # Display the PDF preview once
+            # Display the PDF preview
             show_pdf(save_image_path)
 
             resume_data = ResumeParser(save_image_path).get_extracted_data()
+
+            
             if resume_data:
                 resume_text = pdf_reader(save_image_path)
 
@@ -524,7 +526,7 @@ def run():
                 improvements = []
                 score_breakdown = {}
 
-                
+
             if resume_data:
                 resume_text = pdf_reader(save_image_path)
 
