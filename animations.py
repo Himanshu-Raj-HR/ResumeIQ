@@ -160,13 +160,11 @@ def load_futuristic_animations():
         const parentDoc = window.parent.document;
         if (parentDoc.getElementById('cyber-neural-canvas')) return;
 
-        // Interactive neural network canvas in background
         const canvas = parentDoc.createElement('canvas');
         canvas.id = 'cyber-neural-canvas';
         canvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:0;opacity:0.55;';
         parentDoc.body.appendChild(canvas);
 
-        // Glowing spotlight aura attached to cursor movement
         const glow = parentDoc.createElement('div');
         glow.id = 'cyber-cursor-glow';
         glow.style.cssText = 'position:fixed;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle, rgba(0,245,212,0.13) 0%, rgba(0,173,181,0.04) 45%, transparent 70%);pointer-events:none;z-index:1;transform:translate(-50%,-50%);transition:width 0.2s, height 0.2s;';
@@ -189,7 +187,6 @@ def load_futuristic_animations():
             glow.style.top = e.clientY + 'px';
         });
 
-        // Create floating graph nodes
         const nodes = Array.from({length: 50}, () => ({
             x: Math.random() * width,
             y: Math.random() * height,
@@ -208,13 +205,11 @@ def load_futuristic_animations():
                 if (n.x < 0 || n.x > width) n.vx *= -1;
                 if (n.y < 0 || n.y > height) n.vy *= -1;
 
-                // Draw node
                 ctx.beginPath();
                 ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
                 ctx.fillStyle = '#00f5d4';
                 ctx.fill();
 
-                // Connect to cursor if close (interactive movement sensitivity)
                 let dxMouse = mouse.x - n.x;
                 let dyMouse = mouse.y - n.y;
                 let distMouse = Math.hypot(dxMouse, dyMouse);
@@ -227,7 +222,6 @@ def load_futuristic_animations():
                     ctx.stroke();
                 }
 
-                // Connect nearby nodes into a live graph mesh
                 for (let j = i + 1; j < nodes.length; j++) {
                     let n2 = nodes[j];
                     let dist = Math.hypot(n.x - n2.x, n.y - n2.y);
@@ -247,7 +241,28 @@ def load_futuristic_animations():
     })();
     </script>
     """, height=0)
-#-------------------------------------------------------------------------------------------------------------------------------
+
+
+def render_futuristic_header(title="RESUMEIQ // AI NEURAL CORE"):
+    """Renders a cyberpunk glass header along with an always-playing reactive telemetry graph."""
+    bars_html = "".join(
+        [f'<div class="eq-bar" style="animation-delay: {(i * 0.1) % 0.9:.1f}s;"></div>' for i in range(18)]
+    )
+    st.markdown(f"""
+        <div class="telemetry-box">
+            <div style="border-left: 4px solid #00f5d4; padding-left: 14px;">
+                <h2 style="color: #f0f2f6; font-family: monospace; letter-spacing: 2px; margin: 0; font-size: 1.5rem;">{title}</h2>
+                <p style="color: #00f5d4; font-family: monospace; font-size: 12px; margin: 4px 0 0 0; display: flex; align-items: center;">
+                    <span class="live-dot"></span>SYS_STATUS: ONLINE // NEURAL GRAPH ACTIVE
+                </p>
+            </div>
+            <div style="text-align: right;">
+                <div class="eq-bars">{bars_html}</div>
+                <span style="font-family: monospace; font-size: 10px; color: #00adb5;">LIVE TELEMETRY // HOVER TO BOOST</span>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
 
 def render_interactive_hud_graph(score=85):
     """Renders an always-playing, mouse-sensitive futuristic sine-wave & radar HUD graph."""
