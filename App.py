@@ -292,51 +292,57 @@ st.set_page_config(
 
 
 ###### Main function run() ######
-
 def run():
     # ==========================================
     # HIGH-IMPACT UI THEME INJECTION (CSS)
     # ==========================================
     load_futuristic_animations()
     render_cyberpunk_title_intro()
-    st.markdown("""
-    <style>
-        /* Global Dark Theme & Background */
-        .stApp {
-            background-color: #0e1117;
-            color: #f0f2f6;
-        }
+
+# def run():
+#     # ==========================================
+#     # HIGH-IMPACT UI THEME INJECTION (CSS)
+#     # ==========================================
+#     load_futuristic_animations()
+#     render_cyberpunk_title_intro()
+#     st.markdown("""
+#     <style>
+#         /* Global Dark Theme & Background */
+#         .stApp {
+#             background-color: #0e1117;
+#             color: #f0f2f6;
+#         }
         
-        /* Sleek Header Styling */
-        h1, h2, h3 {
-            font-family: 'Inter', sans-serif;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
+#         /* Sleek Header Styling */
+#         h1, h2, h3 {
+#             font-family: 'Inter', sans-serif;
+#             font-weight: 700;
+#             letter-spacing: -0.5px;
+#         }
         
-        /* Glassmorphism Cards for Metrics & Results */
-        .metric-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            backdrop-filter: blur(4px);
-            text-align: center;
-            transition: transform 0.2s ease, border-color 0.2s ease;
-        }
-        .metric-card:hover {
-            transform: translateY(-3px);
-            border-color: #00adb5;
-        }
+#         /* Glassmorphism Cards for Metrics & Results */
+#         .metric-card {
+#             background: rgba(255, 255, 255, 0.03);
+#             border: 1px solid rgba(255, 255, 255, 0.08);
+#             padding: 20px;
+#             border-radius: 12px;
+#             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+#             backdrop-filter: blur(4px);
+#             text-align: center;
+#             transition: transform 0.2s ease, border-color 0.2s ease;
+#         }
+#         .metric-card:hover {
+#             transform: translateY(-3px);
+#             border-color: #00adb5;
+#         }
         
-        /* Custom Sidebar Polish */
-        [data-testid="stSidebar"] {
-            background-color: #161b22;
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-        }
-    </style>
-    """, unsafe_allow_html=True)
+#         /* Custom Sidebar Polish */
+#         [data-testid="stSidebar"] {
+#             background-color: #161b22;
+#             border-right: 1px solid rgba(255, 255, 255, 0.05);
+#         }
+#     </style>
+#     """, unsafe_allow_html=True)
 
     if os.path.exists('./Logo/RESUM.png'):
         img = Image.open('./Logo/RESUM.png')

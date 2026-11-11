@@ -2,318 +2,312 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 def load_futuristic_animations():
-    """Injects sci-fi typography, angled cyber buttons, staggered skill animations, and scroll-reveal physics."""
+    """Injects sci-fi typography, fixed st_tags auto-height, Plotly rubric/gauge animations, and persistent background neural mesh."""
     
-    # 1. GLOBAL SCI-FI FONTS, CYBER BUTTONS & SCROLL ANIMATION CSS
+    # 1. GLOBAL CSS: Fonts, Glassmorphism, Buttons, Plotly Charts & High-Contrast Text Fixes
     st.markdown("""
     <style>
-        /* Import Futuristic Google Fonts */
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@500;600;700&display=swap');
 
-        /* Global App Background & Base Typography */
+        /* App Background - Transparent layers so background canvas shines through */
         .stApp {
             background-color: #05070b !important;
             background-image: 
                 radial-gradient(circle at 50% 0%, rgba(0, 245, 212, 0.14), transparent 55%),
                 radial-gradient(circle at 85% 80%, rgba(0, 173, 181, 0.1), transparent 50%),
-                linear-gradient(rgba(0, 245, 212, 0.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 245, 212, 0.025) 1px, transparent 1px) !important;
+                linear-gradient(rgba(0, 245, 212, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 245, 212, 0.03) 1px, transparent 1px) !important;
             background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px !important;
             font-family: 'Rajdhani', sans-serif !important;
             font-size: 18px !important;
             color: #e6f1ff !important;
         }
 
+        /* Ensure main containers don't hide the neural canvas */
+        [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
+            background: transparent !important;
+        }
+
         /* Futuristic Headers */
-        h1, h2, h3, [data-testid="stSubheader"] {
+        h1, h2, h3, h4, h5, [data-testid="stSubheader"] {
             font-family: 'Orbitron', sans-serif !important;
             letter-spacing: 2px !important;
             text-transform: uppercase !important;
             color: #ffffff !important;
-            text-shadow: 0 0 18px rgba(0, 245, 212, 0.35) !important;
+            text-shadow: 0 0 18px rgba(0, 245, 212, 0.4) !important;
         }
 
-        h2, [data-testid="stSubheader"] {
-            font-size: 1.45rem !important;
-            border-bottom: 1px solid rgba(0, 245, 212, 0.2);
-            padding-bottom: 6px;
-            margin-top: 18px !important;
+        /* Fix dark unreadable text like "Maybe Available in Future Updates" */
+        h4, h5, h6, [data-testid="stMarkdownContainer"] font, [data-testid="stMarkdownContainer"] span {
+            color: #00f5d4 !important;
         }
 
-        p, li, label, .stMarkdown, .stText {
+        p, li, label, .stMarkdown {
             font-family: 'Rajdhani', sans-serif !important;
-            font-size: 1.12rem !important;
-            font-weight: 500 !important;
-            letter-spacing: 0.4px !important;
+            font-size: 1.15rem !important;
+            font-weight: 600 !important;
+            color: #e0fbfc !important;
+            letter-spacing: 0.5px !important;
         }
 
-        /* Monospace Readouts for Code & Basic Info st.text */
+        /* Basic Info Monospace Readouts */
         pre, code, .stText {
             font-family: 'JetBrains Mono', monospace !important;
             font-size: 0.96rem !important;
             color: #00f5d4 !important;
-            background: rgba(10, 16, 26, 0.65) !important;
+            background: rgba(10, 16, 26, 0.7) !important;
             border-left: 3px solid #00f5d4 !important;
             padding: 8px 14px !important;
             border-radius: 0 8px 8px 0 !important;
             margin-bottom: 6px !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
         }
 
-        /* Transparent Frosted Sidebar */
+        /* Sidebar Glass */
         [data-testid="stSidebar"] {
-            background: rgba(8, 12, 20, 0.72) !important;
+            background: rgba(8, 12, 20, 0.75) !important;
             backdrop-filter: blur(20px) !important;
-            -webkit-backdrop-filter: blur(20px) !important;
-            border-right: 1px solid rgba(0, 245, 212, 0.22) !important;
+            border-right: 1px solid rgba(0, 245, 212, 0.25) !important;
         }
 
         /* =====================================================
-           TOP-NOTCH FUTURISTIC CYBERPUNK BUTTONS
+           EXECUTIVE ATS DASHBOARD METRIC CARDS
+           ===================================================== */
+        [data-testid="stMetric"] {
+            background: linear-gradient(135deg, rgba(14, 22, 36, 0.78), rgba(8, 13, 22, 0.88)) !important;
+            backdrop-filter: blur(16px) !important;
+            border: 1px solid rgba(0, 245, 212, 0.35) !important;
+            border-radius: 14px !important;
+            padding: 18px 20px !important;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45), inset 0 0 15px rgba(0, 245, 212, 0.06) !important;
+            transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1) !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+
+        [data-testid="stMetric"]::after {
+            content: "";
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, #00f5d4, #39ff14, transparent);
+            animation: cardScan 3.5s linear infinite;
+        }
+
+        @keyframes cardScan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        [data-testid="stMetric"]:hover {
+            transform: translateY(-6px) scale(1.02) !important;
+            border-color: #00f5d4 !important;
+            box-shadow: 0 12px 35px rgba(0, 245, 212, 0.3), 0 0 15px rgba(0, 245, 212, 0.2) !important;
+        }
+
+        [data-testid="stMetricLabel"] {
+            font-family: 'Orbitron', sans-serif !important;
+            font-size: 0.9rem !important;
+            letter-spacing: 1.5px !important;
+            color: #00f5d4 !important;
+            text-transform: uppercase !important;
+        }
+
+        [data-testid="stMetricValue"] {
+            font-family: 'Orbitron', sans-serif !important;
+            font-size: 2rem !important;
+            font-weight: 800 !important;
+            color: #ffffff !important;
+            text-shadow: 0 0 14px rgba(0, 245, 212, 0.5) !important;
+        }
+
+        /* =====================================================
+           PLOTLY CHARTS (OVERALL PROFILE HEALTH & RUBRIC BARS)
+           ===================================================== */
+        [data-testid="stPlotlyChart"] {
+            background: rgba(10, 16, 26, 0.65) !important;
+            backdrop-filter: blur(14px) !important;
+            border: 1px solid rgba(0, 245, 212, 0.3) !important;
+            border-radius: 16px !important;
+            padding: 12px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45) !important;
+            transition: all 0.35s ease !important;
+        }
+
+        [data-testid="stPlotlyChart"]:hover {
+            border-color: #00f5d4 !important;
+            box-shadow: 0 0 28px rgba(0, 245, 212, 0.28) !important;
+            transform: translateY(-3px) !important;
+        }
+
+        /* Make Plotly chart backgrounds transparent so glass shows */
+        .js-plotly-plot .plotly .main-svg {
+            background: transparent !important;
+        }
+
+        /* Animate Rubric Breakdown Bars & Gauge */
+        @keyframes rubricBarGrow {
+            0% {
+                transform: scaleX(0);
+                filter: brightness(2) drop-shadow(0 0 12px #00f5d4);
+            }
+            100% {
+                transform: scaleX(1);
+                filter: brightness(1.1) drop-shadow(0 0 6px rgba(0, 245, 212, 0.5));
+            }
+        }
+
+        @keyframes rubricPulseGlow {
+            0%, 100% { filter: drop-shadow(0 0 4px rgba(0, 245, 212, 0.4)); }
+            50% { filter: drop-shadow(0 0 12px rgba(0, 245, 212, 0.9)); }
+        }
+
+        .js-plotly-plot .plot .bars .point path {
+            transform-box: fill-box;
+            transform-origin: left center;
+            animation: rubricBarGrow 1.3s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+                       rubricPulseGlow 2.8s ease-in-out infinite 1.3s !important;
+            transition: all 0.25s ease !important;
+        }
+
+        .js-plotly-plot .plot .bars .point path:hover {
+            filter: brightness(1.4) drop-shadow(0 0 15px #39ff14) !important;
+        }
+
+        /* Animate Overall Profile Health Gauge Arc */
+        @keyframes gaugeSweep {
+            0% { opacity: 0; transform: scale(0.85); filter: blur(6px); }
+            100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 10px rgba(0, 245, 212, 0.5)); }
+        }
+
+        .js-plotly-plot .indicatorlayer .trace {
+            transform-box: fill-box;
+            transform-origin: center bottom;
+            animation: gaugeSweep 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+        }
+
+        /* =====================================================
+           FUTURISTIC CYBERPUNK BUTTONS & TABS
            ===================================================== */
         .stButton > button, 
         [data-testid="stDownloadButton"] > button,
         [data-testid="stFormSubmitButton"] > button {
             min-height: 54px !important;
             width: 100% !important;
-            padding: 14px 30px !important;
+            padding: 14px 28px !important;
             font-family: 'Orbitron', sans-serif !important;
             font-size: 15px !important;
             font-weight: 700 !important;
             letter-spacing: 2.5px !important;
             text-transform: uppercase !important;
             color: #00f5d4 !important;
-            background: linear-gradient(135deg, rgba(0, 245, 212, 0.14) 0%, rgba(10, 18, 30, 0.88) 50%, rgba(0, 173, 181, 0.2) 100%) !important;
-            border: 1.5px solid rgba(0, 245, 212, 0.65) !important;
-            border-radius: 4px !important;
-            /* Angled Sci-Fi Cut Corners */
+            background: linear-gradient(135deg, rgba(0, 245, 212, 0.16) 0%, rgba(10, 18, 30, 0.9) 50%, rgba(0, 173, 181, 0.22) 100%) !important;
+            border: 1.5px solid rgba(0, 245, 212, 0.7) !important;
             clip-path: polygon(14px 0%, 100% 0%, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0% 100%, 0% 14px) !important;
-            box-shadow: 0 0 20px rgba(0, 245, 212, 0.18), inset 0 0 15px rgba(0, 245, 212, 0.08) !important;
+            box-shadow: 0 0 20px rgba(0, 245, 212, 0.2) !important;
             position: relative !important;
             overflow: hidden !important;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-            cursor: pointer !important;
         }
 
-        /* Sweeping Laser Beam Inside Button */
-        .stButton > button::before, 
-        [data-testid="stDownloadButton"] > button::before,
-        [data-testid="stFormSubmitButton"] > button::before {
-            content: "" !important;
-            position: absolute !important;
-            top: 0 !important;
-            left: -120% !important;
-            width: 60% !important;
-            height: 100% !important;
-            background: linear-gradient(120deg, transparent, rgba(0, 245, 212, 0.6), rgba(255, 255, 255, 0.8), rgba(0, 245, 212, 0.6), transparent) !important;
-            transform: skewX(-25deg) !important;
-            transition: left 0.65s ease !important;
-        }
-
-        .stButton > button:hover::before, 
-        [data-testid="stDownloadButton"] > button:hover::before,
-        [data-testid="stFormSubmitButton"] > button:hover::before {
-            left: 140% !important;
-        }
-
-        /* Button Hover Energy Surge */
         .stButton > button:hover, 
-        [data-testid="stDownloadButton"] > button:hover,
-        [data-testid="stFormSubmitButton"] > button:hover {
+        [data-testid="stDownloadButton"] > button:hover {
             color: #04080e !important;
             background: linear-gradient(135deg, #00f5d4 0%, #00bbff 100%) !important;
             border-color: #ffffff !important;
             transform: translateY(-4px) scale(1.02) !important;
             box-shadow: 0 10px 35px rgba(0, 245, 212, 0.65), 0 0 15px #00f5d4 !important;
-            letter-spacing: 3.5px !important;
         }
 
-        /* Button Active Press Physics */
-        .stButton > button:active, 
-        [data-testid="stDownloadButton"] > button:active {
-            transform: translateY(1px) scale(0.98) !important;
+        /* Futuristic Tabs (Score & Rubric Analysis | JD Matcher | Interview Prep) */
+        button[data-baseweb="tab"] {
+            font-family: 'Orbitron', sans-serif !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            letter-spacing: 1px !important;
+            padding: 10px 18px !important;
+            transition: all 0.3s ease !important;
+        }
+        button[data-baseweb="tab"]:hover {
+            color: #00f5d4 !important;
+            text-shadow: 0 0 10px #00f5d4 !important;
         }
 
-        /* =====================================================
-           ONE-BY-ONE STAGGERED SKILL TAGS & PILLS
-           ===================================================== */
-        @keyframes skillPopIn {
-            0% {
-                opacity: 0;
-                transform: translateY(18px) scale(0.75);
-                filter: blur(6px);
-            }
-            70% {
-                transform: translateY(-3px) scale(1.04);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-                filter: blur(0);
-            }
-        }
-
-        span[data-baseweb="tag"], .cyber-skill-tag {
-            font-family: 'JetBrains Mono', monospace !important;
-            font-size: 13.5px !important;
-            font-weight: 600 !important;
-            background: linear-gradient(135deg, rgba(0, 245, 212, 0.16), rgba(0, 173, 181, 0.08)) !important;
-            border: 1px solid rgba(0, 245, 212, 0.55) !important;
-            color: #e0fbfc !important;
-            border-radius: 6px !important;
-            padding: 6px 14px !important;
-            margin: 5px !important;
-            box-shadow: 0 0 14px rgba(0, 245, 212, 0.18) !important;
-            animation: skillPopIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both !important;
-            transition: all 0.25s ease !important;
-        }
-
-        span[data-baseweb="tag"]:hover {
-            background: rgba(0, 245, 212, 0.32) !important;
-            border-color: #39ff14 !important;
-            color: #ffffff !important;
-            transform: translateY(-4px) scale(1.08) !important;
-            box-shadow: 0 0 22px rgba(57, 255, 20, 0.5) !important;
-        }
-
-        /* =====================================================
-           GLASS CARDS, ALERTS, EXPANDERS & RECOMMENDATIONS
-           ===================================================== */
-        [data-testid="stMetric"], 
-        [data-testid="stExpander"], 
-        [data-testid="stFileUploader"],
-        .stAlert,
-        div[data-baseweb="select"] > div,
-        div[data-baseweb="input"] > div {
-            background: rgba(14, 21, 33, 0.55) !important;
+        /* Glass Expanders, Alerts & Uploads */
+        [data-testid="stExpander"], [data-testid="stFileUploader"], .stAlert {
+            background: rgba(14, 21, 33, 0.6) !important;
             backdrop-filter: blur(14px) !important;
-            -webkit-backdrop-filter: blur(14px) !important;
-            border: 1px solid rgba(0, 245, 212, 0.28) !important;
+            border: 1px solid rgba(0, 245, 212, 0.3) !important;
             border-radius: 12px !important;
-            transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1) !important;
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35) !important;
         }
 
-        [data-testid="stMetric"]:hover, 
-        [data-testid="stExpander"]:hover, 
-        [data-testid="stFileUploader"]:hover,
-        .stAlert:hover {
-            transform: translateY(-4px) scale(1.01) !important;
-            border-color: #00f5d4 !important;
-            box-shadow: 0 12px 32px rgba(0, 245, 212, 0.24), inset 0 0 14px rgba(0, 245, 212, 0.08) !important;
-        }
-
-        /* Futuristic Progress Bar (if Streamlit st.progress is used) */
-        .stProgress > div > div > div > div {
-            background: linear-gradient(90deg, #00adb5, #00f5d4, #39ff14) !important;
-            background-size: 200% 100% !important;
-            animation: progressPulse 2s linear infinite !important;
-            box-shadow: 0 0 16px rgba(0, 245, 212, 0.7) !important;
-        }
-
-        @keyframes progressPulse {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 200% 50%; }
-        }
-
-        /* =====================================================
-           SCROLL-REVEAL ANIMATION CLASSES
-           ===================================================== */
+        /* Scroll-Reveal Classes */
         .cyber-scroll-hidden {
             opacity: 0;
-            transform: translateY(28px) scale(0.98);
-            filter: blur(4px);
-            transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), 
-                        transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-                        filter 0.65s ease;
+            transform: translateY(24px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
         }
-
         .cyber-scroll-visible {
             opacity: 1 !important;
-            transform: translateY(0) scale(1) !important;
-            filter: blur(0) !important;
+            transform: translateY(0) !important;
         }
 
-        /* Live Status Dot & Header Telemetry */
+        /* Telemetry Header */
         .live-dot {
-            height: 10px;
-            width: 10px;
-            background-color: #39ff14;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 10px #39ff14;
-            animation: blink 1.4s infinite;
-            margin-right: 8px;
+            height: 10px; width: 10px; background-color: #39ff14;
+            border-radius: 50%; display: inline-block;
+            box-shadow: 0 0 10px #39ff14; animation: blink 1.4s infinite; margin-right: 8px;
         }
-        @keyframes blink {
-            0%, 100% { opacity: 0.25; }
-            50% { opacity: 1; }
-        }
-
+        @keyframes blink { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
         .telemetry-box {
-            background: rgba(12, 18, 28, 0.6);
-            backdrop-filter: blur(14px);
-            border: 1px solid rgba(0, 245, 212, 0.32);
-            border-radius: 12px;
-            padding: 14px 20px;
-            margin-bottom: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: all 0.3s ease;
+            background: rgba(12, 18, 28, 0.65); backdrop-filter: blur(14px);
+            border: 1px solid rgba(0, 245, 212, 0.35); border-radius: 12px;
+            padding: 14px 20px; margin-bottom: 22px;
+            display: flex; align-items: center; justify-content: space-between;
         }
-        .telemetry-box:hover {
-            border-color: #00f5d4;
-            box-shadow: 0 0 25px rgba(0, 245, 212, 0.28);
-        }
-        .eq-bars {
-            display: flex;
-            align-items: flex-end;
-            gap: 4px;
-            height: 28px;
-        }
+        .eq-bars { display: flex; align-items: flex-end; gap: 4px; height: 28px; }
         .eq-bar {
-            width: 5px;
-            background: linear-gradient(to top, #00adb5, #00f5d4);
-            border-radius: 3px;
-            animation: equalize 1.1s ease-in-out infinite;
+            width: 5px; background: linear-gradient(to top, #00adb5, #00f5d4);
+            border-radius: 3px; animation: equalize 1.1s ease-in-out infinite;
         }
-        .telemetry-box:hover .eq-bar {
-            animation-duration: 0.3s;
-            background: linear-gradient(to top, #00f5d4, #39ff14);
-        }
-        @keyframes equalize {
-            0%, 100% { height: 20%; }
-            50% { height: 100%; }
-        }
+        @keyframes equalize { 0%, 100% { height: 20%; } 50% { height: 100%; } }
     </style>
     """, unsafe_allow_html=True)
 
-    # 2. JAVASCRIPT ENGINE: Background Neural Mesh + Scroll-Reveal + One-by-One Skill Cascade
+    # 2. JAVASCRIPT ENGINE: Self-Healing Background Mesh + Fixed Skill Tags + Plotly Score/Rubric Animator
     components.html("""
     <script>
     (function() {
-        const parentDoc = window.parent.document;
+        const parentWin = window.parent;
+        const parentDoc = parentWin.document;
 
-        // --- A. BACKGROUND NEURAL PARTICLE MESH ---
-        if (!parentDoc.getElementById('cyber-neural-canvas')) {
-            const canvas = parentDoc.createElement('canvas');
+        // =========================================================================
+        // A. ALWAYS-RUNNING BACKGROUND NEURAL GRAPH (SELF-HEALING ON STREAMLIT RERUN)
+        // =========================================================================
+        let canvas = parentDoc.getElementById('cyber-neural-canvas');
+        if (!canvas) {
+            canvas = parentDoc.createElement('canvas');
             canvas.id = 'cyber-neural-canvas';
-            canvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:0;opacity:0.5;';
             parentDoc.body.appendChild(canvas);
+        }
+        // Keep z-index above base background but non-blocking so it never disappears
+        canvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:1;opacity:0.65;';
 
-            const glow = parentDoc.createElement('div');
+        let glow = parentDoc.getElementById('cyber-cursor-glow');
+        if (!glow) {
+            glow = parentDoc.createElement('div');
             glow.id = 'cyber-cursor-glow';
-            glow.style.cssText = 'position:fixed;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle, rgba(0,245,212,0.14) 0%, rgba(0,173,181,0.04) 45%, transparent 70%);pointer-events:none;z-index:1;transform:translate(-50%,-50%);';
             parentDoc.body.appendChild(glow);
+        }
+        glow.style.cssText = 'position:fixed;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle, rgba(0,245,212,0.15) 0%, rgba(0,173,181,0.05) 45%, transparent 70%);pointer-events:none;z-index:1;transform:translate(-50%,-50%);';
 
+        if (!parentWin.__cyberMeshRunning) {
+            parentWin.__cyberMeshRunning = true;
             const ctx = canvas.getContext('2d');
-            let width = canvas.width = window.parent.innerWidth;
-            let height = canvas.height = window.parent.innerHeight;
+            let width = canvas.width = parentWin.innerWidth;
+            let height = canvas.height = parentWin.innerHeight;
 
-            window.parent.addEventListener('resize', () => {
-                width = canvas.width = window.parent.innerWidth;
-                height = canvas.height = window.parent.innerHeight;
+            parentWin.addEventListener('resize', () => {
+                width = canvas.width = parentWin.innerWidth;
+                height = canvas.height = parentWin.innerHeight;
             });
 
             let mouse = { x: width / 2, y: height / 2 };
@@ -324,16 +318,22 @@ def load_futuristic_animations():
                 glow.style.top = e.clientY + 'px';
             });
 
-            const nodes = Array.from({length: 48}, () => ({
+            const nodes = Array.from({length: 55}, () => ({
                 x: Math.random() * width,
                 y: Math.random() * height,
-                vx: (Math.random() - 0.5) * 0.75,
-                vy: (Math.random() - 0.5) * 0.75,
-                r: Math.random() * 2 + 1
+                vx: (Math.random() - 0.5) * 0.9,
+                vy: (Math.random() - 0.5) * 0.9,
+                r: Math.random() * 2.2 + 1
             }));
 
-            function animateMesh() {
+            function renderNeuralMesh() {
+                // Re-verify canvas dimensions in case layout shifted
+                if (canvas.width !== parentWin.innerWidth || canvas.height !== parentWin.innerHeight) {
+                    width = canvas.width = parentWin.innerWidth;
+                    height = canvas.height = parentWin.innerHeight;
+                }
                 ctx.clearRect(0, 0, width, height);
+
                 for (let i = 0; i < nodes.length; i++) {
                     let n = nodes[i];
                     n.x += n.vx;
@@ -347,117 +347,218 @@ def load_futuristic_animations():
                     ctx.fill();
 
                     let distMouse = Math.hypot(mouse.x - n.x, mouse.y - n.y);
-                    if (distMouse < 165) {
+                    if (distMouse < 180) {
                         ctx.beginPath();
                         ctx.moveTo(n.x, n.y);
                         ctx.lineTo(mouse.x, mouse.y);
-                        ctx.strokeStyle = `rgba(0, 245, 212, ${1 - distMouse / 165})`;
-                        ctx.lineWidth = 1.1;
+                        ctx.strokeStyle = `rgba(0, 245, 212, ${1 - distMouse / 180})`;
+                        ctx.lineWidth = 1.3;
                         ctx.stroke();
                     }
 
                     for (let j = i + 1; j < nodes.length; j++) {
                         let n2 = nodes[j];
                         let dist = Math.hypot(n.x - n2.x, n.y - n2.y);
-                        if (dist < 105) {
+                        if (dist < 115) {
                             ctx.beginPath();
                             ctx.moveTo(n.x, n.y);
                             ctx.lineTo(n2.x, n2.y);
-                            ctx.strokeStyle = `rgba(0, 173, 181, ${(1 - dist / 105) * 0.32})`;
-                            ctx.lineWidth = 0.7;
+                            ctx.strokeStyle = `rgba(0, 173, 181, ${(1 - dist / 115) * 0.38})`;
+                            ctx.lineWidth = 0.8;
                             ctx.stroke();
                         }
                     }
                 }
-                requestAnimationFrame(animateMesh);
+                parentWin.requestAnimationFrame(renderNeuralMesh);
             }
-            animateMesh();
+            parentWin.requestAnimationFrame(renderNeuralMesh);
         }
 
-        // --- B. SCROLL-REVEAL & STAGGERED SKILL CASCADE ENGINE ---
-        const scrollObserver = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('cyber-scroll-visible');
-                }
-            });
-        }, { threshold: 0.08 });
-
-        function applyScrollAndSkillAnimations() {
-            // 1. Animate blocks on scroll (headers, alerts, expanders, recommendations, text blocks)
-            const blocks = parentDoc.querySelectorAll(
-                '[data-testid="stVerticalBlock"] > div > div > [data-testid="stMarkdownContainer"], ' +
-                '.stAlert, [data-testid="stExpander"], [data-testid="stMetric"], .stText'
-            );
-            blocks.forEach((el) => {
-                if (!el.dataset.cyberScrollBound) {
-                    el.dataset.cyberScrollBound = 'true';
-                    el.classList.add('cyber-scroll-hidden');
-                    scrollObserver.observe(el);
-                }
-            });
-
-            // 2. Stagger skill tags (both main page & st_tags iframes) one-by-one
-            const mainTags = parentDoc.querySelectorAll('span[data-baseweb="tag"]');
-            mainTags.forEach((tag, idx) => {
-                if (!tag.dataset.staggered) {
-                    tag.dataset.staggered = 'true';
-                    tag.style.animationDelay = `${idx * 0.09}s`;
-                }
-            });
-
-            // Check inside st_tags component iframes so skills pop in one-by-one
+        // =========================================================================
+        // B. FIX SKILL TAGS & RECOMMENDATIONS (NO DOUBLE-BOX, AUTO-EXPAND HEIGHT)
+        // =========================================================================
+        function fixSkillsAndAnimateDashboard() {
             const iframes = parentDoc.querySelectorAll('iframe');
             iframes.forEach((frame) => {
                 try {
                     const frameDoc = frame.contentDocument || frame.contentWindow.document;
-                    if (!frameDoc) return;
+                    if (!frameDoc || !frameDoc.body) return;
 
-                    if (!frameDoc.getElementById('cyber-tag-style')) {
-                        const styleEl = frameDoc.createElement('style');
-                        styleEl.id = 'cyber-tag-style';
-                        styleEl.innerHTML = `
-                            @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600&display=swap');
-                            @keyframes tagCascade {
-                                0% { opacity: 0; transform: translateY(15px) scale(0.7); filter: blur(4px); }
-                                75% { transform: translateY(-3px) scale(1.05); }
-                                100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-                            }
-                            span, .ReactTags__tag {
-                                font-family: 'JetBrains Mono', monospace !important;
-                                background: linear-gradient(135deg, rgba(0, 245, 212, 0.22), rgba(10, 20, 34, 0.9)) !important;
-                                border: 1px solid #00f5d4 !important;
-                                color: #e0fbfc !important;
-                                border-radius: 6px !important;
-                                padding: 6px 13px !important;
-                                margin: 5px !important;
-                                display: inline-block !important;
-                                box-shadow: 0 0 12px rgba(0, 245, 212, 0.28) !important;
-                                animation: tagCascade 0.5s cubic-bezier(0.22, 1, 0.36, 1) both !important;
-                                transition: all 0.25s ease !important;
-                            }
-                            span:hover, .ReactTags__tag:hover {
-                                transform: translateY(-3px) scale(1.07) !important;
-                                border-color: #39ff14 !important;
-                                box-shadow: 0 0 20px rgba(57, 255, 20, 0.6) !important;
-                            }
-                        `;
-                        frameDoc.head.appendChild(styleEl);
-                    }
+                    // Detect if this iframe is a streamlit_tags (st_tags) component
+                    const tagContainer = frameDoc.querySelector('.ReactTags__tags');
+                    if (tagContainer) {
+                        // Replace broken double-box style with clean single-pill style
+                        let styleEl = frameDoc.getElementById('cyber-tag-style-v2');
+                        if (!styleEl) {
+                            // Remove old broken style if present
+                            const oldStyle = frameDoc.getElementById('cyber-tag-style');
+                            if (oldStyle) oldStyle.remove();
 
-                    const innerTags = frameDoc.querySelectorAll('.ReactTags__tag, span');
-                    innerTags.forEach((t, i) => {
-                        if (!t.dataset.staggered) {
-                            t.dataset.staggered = 'true';
-                            t.style.animationDelay = `${i * 0.11}s`;
+                            styleEl = frameDoc.createElement('style');
+                            styleEl.id = 'cyber-tag-style-v2';
+                            styleEl.innerHTML = `
+                                @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600&display=swap');
+                                @keyframes tagPopIn {
+                                    0% { opacity: 0; transform: translateY(12px) scale(0.8); }
+                                    70% { transform: translateY(-2px) scale(1.04); }
+                                    100% { opacity: 1; transform: translateY(0) scale(1); }
+                                }
+                                html, body {
+                                    background: transparent !important;
+                                    overflow: visible !important;
+                                    margin: 0 !important;
+                                    padding: 4px !important;
+                                }
+                                .ReactTags__tags {
+                                    background: rgba(10, 17, 28, 0.75) !important;
+                                    border: 1px solid rgba(0, 245, 212, 0.35) !important;
+                                    border-radius: 12px !important;
+                                    padding: 12px !important;
+                                    display: flex !important;
+                                    flex-wrap: wrap !important;
+                                    gap: 8px !important;
+                                    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35) !important;
+                                }
+                                .ReactTags__selected {
+                                    display: flex !important;
+                                    flex-wrap: wrap !important;
+                                    gap: 8px !important;
+                                    width: 100% !important;
+                                }
+                                /* Style ONLY the outer tag pill, never inner spans */
+                                .ReactTags__tag {
+                                    font-family: 'JetBrains Mono', monospace !important;
+                                    font-size: 13.5px !important;
+                                    font-weight: 600 !important;
+                                    background: linear-gradient(135deg, rgba(0, 245, 212, 0.18), rgba(0, 173, 181, 0.08)) !important;
+                                    border: 1px solid #00f5d4 !important;
+                                    color: #ffffff !important;
+                                    border-radius: 8px !important;
+                                    padding: 6px 12px !important;
+                                    margin: 0 !important;
+                                    display: inline-flex !important;
+                                    align-items: center !important;
+                                    gap: 6px !important;
+                                    box-shadow: 0 0 12px rgba(0, 245, 212, 0.22) !important;
+                                    animation: tagPopIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both !important;
+                                    transition: all 0.25s ease !important;
+                                }
+                                .ReactTags__tag span, .ReactTags__tag a {
+                                    border: none !important;
+                                    background: transparent !important;
+                                    box-shadow: none !important;
+                                    padding: 0 !important;
+                                    margin: 0 !important;
+                                }
+                                .ReactTags__tag:hover {
+                                    transform: translateY(-3px) scale(1.06) !important;
+                                    border-color: #39ff14 !important;
+                                    background: rgba(0, 245, 212, 0.3) !important;
+                                    box-shadow: 0 0 18px rgba(57, 255, 20, 0.55) !important;
+                                }
+                                .ReactTags__remove {
+                                    color: #00f5d4 !important;
+                                    margin-left: 6px !important;
+                                    cursor: pointer !important;
+                                    border: none !important;
+                                    background: transparent !important;
+                                }
+                                .ReactTags__tagInput input {
+                                    font-family: 'JetBrains Mono', monospace !important;
+                                    background: transparent !important;
+                                    color: #00f5d4 !important;
+                                    border: none !important;
+                                    outline: none !important;
+                                }
+                            `;
+                            frameDoc.head.appendChild(styleEl);
                         }
-                    });
+
+                        // Stagger each skill pill one-by-one
+                        const tags = frameDoc.querySelectorAll('.ReactTags__tag');
+                        tags.forEach((t, i) => {
+                            if (!t.dataset.staggeredV2) {
+                                t.dataset.staggeredV2 = 'true';
+                                t.style.animationDelay = `${i * 0.08}s`;
+                            }
+                        });
+
+                        // Auto-resize iframe height so skills & recommendations are NEVER cut off
+                        const neededHeight = tagContainer.scrollHeight + 24;
+                        if (neededHeight > 60 && Math.abs(frame.clientHeight - neededHeight) > 6) {
+                            frame.style.height = neededHeight + 'px';
+                            frame.height = neededHeight;
+                        }
+                    }
                 } catch (e) {}
+            });
+
+            // =========================================================================
+            // C. ANIMATE PLOTLY GAUGE NUMBER (0 -> 80) & RUBRIC BARS ONE-BY-ONE
+            // =========================================================================
+            // 1. Stagger Rubric Breakdown Bars one by one
+            const rubricBars = parentDoc.querySelectorAll('.js-plotly-plot .plot .bars .point path');
+            rubricBars.forEach((bar, idx) => {
+                if (!bar.dataset.rubricAnimated) {
+                    bar.dataset.rubricAnimated = 'true';
+                    bar.style.animationDelay = `${idx * 0.12}s, ${1.3 + idx * 0.12}s`;
+                }
+            });
+
+            // 2. Count up Plotly Gauge "Overall Profile Health" Score (e.g. 0 -> 80)
+            const gaugeNumbers = parentDoc.querySelectorAll('.js-plotly-plot .indicatorlayer text.numbers');
+            gaugeNumbers.forEach((numEl) => {
+                const rawText = numEl.textContent.trim();
+                const targetVal = parseFloat(rawText);
+                if (!isNaN(targetVal) && targetVal > 0 && !numEl.dataset.countedUp) {
+                    numEl.dataset.countedUp = 'true';
+                    let start = null;
+                    const duration = 1600;
+                    function stepGauge(ts) {
+                        if (!start) start = ts;
+                        const prog = Math.min((ts - start) / duration, 1);
+                        const eased = 1 - Math.pow(1 - prog, 3);
+                        numEl.textContent = Math.round(eased * targetVal);
+                        if (prog < 1) {
+                            parentWin.requestAnimationFrame(stepGauge);
+                        } else {
+                            numEl.textContent = rawText;
+                        }
+                    }
+                    parentWin.requestAnimationFrame(stepGauge);
+                }
+            });
+
+            // 3. Count up Executive ATS Metric Cards (e.g. "80/100", "12 Items", "2 Page(s)")
+            const metricValues = parentDoc.querySelectorAll('[data-testid="stMetricValue"] div');
+            metricValues.forEach((el) => {
+                const text = el.textContent.trim();
+                const match = text.match(/^(\\d+)(.*)$/);
+                if (match && !el.dataset.countedUp) {
+                    el.dataset.countedUp = 'true';
+                    const target = parseInt(match[1], 10);
+                    const suffix = match[2]; // e.g., "/100" or " Items"
+                    let start = null;
+                    const duration = 1400;
+                    function stepMetric(ts) {
+                        if (!start) start = ts;
+                        const prog = Math.min((ts - start) / duration, 1);
+                        const eased = 1 - Math.pow(1 - prog, 3);
+                        el.textContent = Math.round(eased * target) + suffix;
+                        if (prog < 1) {
+                            parentWin.requestAnimationFrame(stepMetric);
+                        } else {
+                            el.textContent = text;
+                        }
+                    }
+                    parentWin.requestAnimationFrame(stepMetric);
+                }
             });
         }
 
-        applyScrollAndSkillAnimations();
-        setInterval(applyScrollAndSkillAnimations, 700);
+        fixSkillsAndAnimateDashboard();
+        if (parentWin.__cyberFixInterval) clearInterval(parentWin.__cyberFixInterval);
+        parentWin.__cyberFixInterval = setInterval(fixSkillsAndAnimateDashboard, 500);
     })();
     </script>
     """, height=0)
@@ -489,11 +590,7 @@ def render_interactive_hud_graph(score=85):
     html_code = """
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Orbitron:wght@700;900&display=swap');
-        
-        @keyframes spinSlow {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        @keyframes spinSlow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes pulseRing {
             0%, 100% { filter: drop-shadow(0 0 6px #00f5d4); }
             50% { filter: drop-shadow(0 0 16px #39ff14); }
@@ -503,20 +600,16 @@ def render_interactive_hud_graph(score=85):
     <div id="hud-container" style="
         background: linear-gradient(135deg, rgba(12, 19, 31, 0.85), rgba(7, 11, 18, 0.92));
         backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
         border: 1px solid rgba(0, 245, 212, 0.4);
         border-radius: 16px;
         padding: 18px 24px;
         color: #e0fbfc;
         font-family: 'JetBrains Mono', monospace;
-        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 245, 212, 0.05);
-        transition: all 0.3s ease;
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
         position: relative;
         overflow: hidden;
     ">
         <div style="display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap;">
-            
-            <!-- Left: Title & Live Telemetry Wave Canvas -->
             <div style="flex: 1; min-width: 240px;">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
                     <span style="color: #00f5d4; font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 15px; letter-spacing: 2px;">
@@ -532,14 +625,10 @@ def render_interactive_hud_graph(score=85):
                 <canvas id="waveCanvas" height="115" style="width: 100%; display: block; cursor: crosshair;"></canvas>
             </div>
 
-            <!-- Right: Animated 0-to-Score Circular Holographic Gauge -->
             <div style="position: relative; width: 135px; height: 135px; display: flex; align-items: center; justify-content: center;">
-                <!-- Outer Rotating Dashed Cyber Ring -->
                 <svg width="135" height="135" style="position: absolute; top: 0; left: 0; animation: spinSlow 14s linear infinite;">
                     <circle cx="67.5" cy="67.5" r="61" fill="none" stroke="rgba(0, 245, 212, 0.35)" stroke-width="2" stroke-dasharray="10 6" />
                 </svg>
-
-                <!-- Animated Progress Ring (Loads 0 to Score) -->
                 <svg width="135" height="135" style="position: absolute; top: 0; left: 0; transform: rotate(-90deg); animation: pulseRing 3s ease-in-out infinite;">
                     <circle cx="67.5" cy="67.5" r="50" fill="none" stroke="rgba(255, 255, 255, 0.08)" stroke-width="8" />
                     <circle id="scoreArc" cx="67.5" cy="67.5" r="50" fill="none" stroke="url(#cyberGrad)" stroke-width="8"
@@ -551,8 +640,6 @@ def render_interactive_hud_graph(score=85):
                         </linearGradient>
                     </defs>
                 </svg>
-
-                <!-- Center Animated Counter -->
                 <div style="text-align: center; z-index: 2;">
                     <div id="scoreCounter" style="font-family: 'Orbitron', sans-serif; font-size: 26px; font-weight: 900; color: #ffffff; text-shadow: 0 0 12px #00f5d4;">
                         0%
@@ -562,25 +649,22 @@ def render_interactive_hud_graph(score=85):
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
     <script>
     (function() {
-        const targetScore = Math.max(0, Math.min(100, Number(SCORE_VAL) || 85));
+        const targetScore = Math.max(0, Math.min(100, Number(SCORE_VAL) || 80));
         const counterEl = document.getElementById('scoreCounter');
         const arcEl = document.getElementById('scoreArc');
-        const circumference = 2 * Math.PI * 50; // 314.16
+        const circumference = 2 * Math.PI * 50;
 
-        // 1. Smooth 0 -> Target Score Load Animation + Continuous Micro-Fluctuation
         let startTime = null;
-        const duration = 1800; // 1.8s smooth count-up
+        const duration = 1800;
 
         function animateCounter(timestamp) {
             if (!startTime) startTime = timestamp;
             const progress = Math.min((timestamp - startTime) / duration, 1);
-            // Ease-out cubic curve
             const eased = 1 - Math.pow(1 - progress, 3);
             const currentVal = Math.round(eased * targetScore);
 
@@ -590,7 +674,6 @@ def render_interactive_hud_graph(score=85):
             if (progress < 1) {
                 requestAnimationFrame(animateCounter);
             } else {
-                // Continuous subtle breathing glow after reaching target score
                 setInterval(() => {
                     const jitter = (Math.random() - 0.5) * 1.8;
                     const dynamicScore = Math.min(100, Math.max(0, targetScore + jitter));
@@ -600,7 +683,6 @@ def render_interactive_hud_graph(score=85):
         }
         requestAnimationFrame(animateCounter);
 
-        // 2. Continuous Reactive Multi-Wave + Scanning Bar Graph
         const canvas = document.getElementById('waveCanvas');
         const container = document.getElementById('hud-container');
         const ctx = canvas.getContext('2d');
@@ -637,7 +719,6 @@ def render_interactive_hud_graph(score=85):
         function drawWave() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Background HUD Grid
             ctx.strokeStyle = 'rgba(0, 245, 212, 0.08)';
             ctx.lineWidth = 1;
             for (let x = 0; x < canvas.width; x += 28) {
@@ -647,7 +728,6 @@ def render_interactive_hud_graph(score=85):
                 ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
             }
 
-            // Animated Vertical Telemetry Bars in Background
             const barCount = 32;
             const barWidth = (canvas.width / barCount) - 4;
             for (let i = 0; i < barCount; i++) {
@@ -656,7 +736,6 @@ def render_interactive_hud_graph(score=85):
                 ctx.fillRect(i * (barWidth + 4), canvas.height - barH, barWidth, barH);
             }
 
-            // 3 Continuous Overlapping Neural Waves
             const waves = [
                 { color: '#00f5d4', width: 2.4, freq: 0.024, amp: 28 },
                 { color: '#39ff14', width: 1.6, freq: 0.038, amp: 18 },
@@ -683,7 +762,6 @@ def render_interactive_hud_graph(score=85):
                 ctx.shadowBlur = 0;
             });
 
-            // Moving Vertical Laser Scanner Line across Graph
             scanX = (scanX + 2.2) % canvas.width;
             const grad = ctx.createLinearGradient(scanX - 20, 0, scanX + 5, 0);
             grad.addColorStop(0, 'transparent');
