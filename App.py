@@ -371,7 +371,19 @@ def run():
         if pdf_file is not None:
             with st.spinner('Hang On While We Cook Magic For You...'):
                 time.sleep(2)
+            
+            # Save the uploaded file locally so the PDF viewer and parser can read it
+            os.makedirs('./Uploaded_Resumes', exist_ok=True)
+            save_image_path = os.path.join('./Uploaded_Resumes', pdf_file.name)
+            with open(save_image_path, "wb") as f:
+                f.write(pdf_file.getbuffer())
+            
+            # Display the PDF preview
+            show_pdf(save_image_path)
 
+        #updateed here 11nov - pdf showing problem 
+
+        
             os.makedirs('./Uploaded_Resumes', exist_ok=True)
             save_image_path = './Uploaded_Resumes/' + pdf_file.name
             pdf_name = pdf_file.name
