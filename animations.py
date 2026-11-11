@@ -585,8 +585,8 @@ def render_futuristic_header(title="RESUMEIQ // AI NEURAL CORE"):
     """, unsafe_allow_html=True)
 
 
-def render_interactive_hud_graph(score=85):
-    """Renders an animated 0-to-score counter, spinning holographic radar ring, and continuous waveform HUD."""
+def render_interactive_hud_graph(score=0):
+    """Renders a live telemetry HUD that automatically syncs with the real ATS Score & Skills on the page."""
     html_code = """
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Orbitron:wght@700;900&display=swap');
@@ -611,16 +611,16 @@ def render_interactive_hud_graph(score=85):
     ">
         <div style="display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 240px;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap;">
                     <span style="color: #00f5d4; font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 15px; letter-spacing: 2px;">
                         ⚡ NEURAL ATS SCORE TELEMETRY
                     </span>
-                    <span style="background: rgba(57, 255, 20, 0.15); border: 1px solid #39ff14; color: #39ff14; font-size: 10px; padding: 2px 8px; border-radius: 4px;">
-                        LIVE STREAM
+                    <span id="hudStatusBadge" style="background: rgba(57, 255, 20, 0.15); border: 1px solid #39ff14; color: #39ff14; font-size: 10px; padding: 2px 8px; border-radius: 4px;">
+                        SYNCING REAL DATA...
                     </span>
                 </div>
-                <div style="font-size: 11px; color: #8b949e; margin-bottom: 10px;">
-                    HOVER & MOVE CURSOR ACROSS WAVEFORM TO AMPLIFY NEURAL HARMONICS
+                <div id="hudSubtext" style="font-size: 11px; color: #8b949e; margin-bottom: 10px;">
+                    ANALYZING RESUME METRICS // MOVE CURSOR TO MODULATE HARMONICS
                 </div>
                 <canvas id="waveCanvas" height="115" style="width: 100%; display: block; cursor: crosshair;"></canvas>
             </div>
@@ -645,7 +645,7 @@ def render_interactive_hud_graph(score=85):
                         0%
                     </div>
                     <div style="font-size: 9px; color: #00f5d4; letter-spacing: 1.5px; margin-top: 2px;">
-                        MATCH INDEX
+                        REAL ATS SCORE
                     </div>
                 </div>
             </div>
@@ -654,35 +654,84 @@ def render_interactive_hud_graph(score=85):
 
     <script>
     (function() {
-        const targetScore = Math.max(0, Math.min(100, Number(SCORE_VAL) || 80));
+        let targetScore = 0;
+        let lastAnimatedScore = -1;
         const counterEl = document.getElementById('scoreCounter');
         const arcEl = document.getElementById('scoreArc');
+        const badgeEl = document.getElementById('hudStatusBadge');
+        const subtextEl = document.getElementById('hudSubtext');
         const circumference = 2 * Math.PI * 50;
 
-        let startTime = null;
-        const duration = 1800;
+        function animateToScore(newScore) {
+            if (newScore === lastAnimatedScore) return;
+            lastAnimatedScore = newScore;
+            targetScore = newScore;
+            let startTime = null;
+            const duration = 1600;
 
-        function animateCounter(timestamp) {
-            if (!startTime) startTime = timestamp;
-            const progress = Math.min((timestamp - startTime) / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3);
-            const currentVal = Math.round(eased * targetScore);
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const progress = Math.min((timestamp - startTime) / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const currentVal = Math.round(eased * targetScore);
 
-            counterEl.innerText = currentVal + '%';
-            arcEl.style.strokeDashoffset = circumference - (eased * targetScore / 100) * circumference;
+                counterEl.innerText = currentVal + '%';
+                arcEl.style.strokeDashoffset = circumference - (eased * targetScore / 100) * circumference;
 
-            if (progress < 1) {
-                requestAnimationFrame(animateCounter);
-            } else {
-                setInterval(() => {
-                    const jitter = (Math.random() - 0.5) * 1.8;
-                    const dynamicScore = Math.min(100, Math.max(0, targetScore + jitter));
-                    arcEl.style.strokeDashoffset = circumference - (dynamicScore / 100) * circumference;
-                }, 180);
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                }
             }
+            requestAnimationFrame(step);
         }
-        requestAnimationFrame(animateCounter);
 
+        // Automatically scrape the REAL calculated ATS Score & Metrics from the parent Streamlit page
+        function syncRealScoreFromDOM() {
+            try {
+                const parentDoc = window.parent.document;
+                const metrics = parentDoc.querySelectorAll('[data-testid="stMetric"]');
+                let foundScore = null;
+                let skillsText = "";
+                let expText = "";
+
+                metrics.forEach((m) => {
+                    const label = m.innerText || "";
+                    if (label.includes("ATS Score") || label.includes("/100")) {
+                        const match = label.match(/(\\d+)\\s*\\/\\s*100/);
+                        if (match) foundScore = parseInt(match[1], 10);
+                    }
+                    if (label.includes("Detected Skills")) {
+                        const match = label.match(/(\\d+\\s*Items)/i);
+                        if (match) skillsText = match[1];
+                    }
+                    if (label.includes("Experience Level")) {
+                        const lines = label.split('\\n').map(s => s.trim()).filter(Boolean);
+                        if (lines.length >= 2) expText = lines[1];
+                    }
+                });
+
+                // Also check Plotly gauge if metric card hasn't rendered yet
+                if (foundScore === null) {
+                    const gaugeNum = parentDoc.querySelector('.js-plotly-plot .indicatorlayer text.numbers');
+                    if (gaugeNum && !isNaN(parseInt(gaugeNum.textContent, 10))) {
+                        foundScore = parseInt(gaugeNum.textContent, 10);
+                    }
+                }
+
+                if (foundScore !== null && foundScore > 0) {
+                    animateToScore(foundScore);
+                    badgeEl.innerText = foundScore >= 75 ? "OPTIMAL PROFILE" : (foundScore >= 50 ? "MODERATE MATCH" : "NEEDS BOOST");
+                    if (skillsText || expText) {
+                        subtextEl.innerText = `LIVE TELEMETRY // DETECTED SKILLS: ${skillsText || 'ACTIVE'} // LEVEL: ${expText || 'ANALYZED'}`;
+                    }
+                }
+            } catch (e) {}
+        }
+
+        syncRealScoreFromDOM();
+        setInterval(syncRealScoreFromDOM, 800);
+
+        // Waveform Canvas Engine (Wave height & speed scale with real targetScore!)
         const canvas = document.getElementById('waveCanvas');
         const container = document.getElementById('hud-container');
         const ctx = canvas.getContext('2d');
@@ -718,6 +767,7 @@ def render_interactive_hud_graph(score=85):
 
         function drawWave() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const scoreRatio = Math.max(0.25, (targetScore || 50) / 100);
 
             ctx.strokeStyle = 'rgba(0, 245, 212, 0.08)';
             ctx.lineWidth = 1;
@@ -731,15 +781,15 @@ def render_interactive_hud_graph(score=85):
             const barCount = 32;
             const barWidth = (canvas.width / barCount) - 4;
             for (let i = 0; i < barCount; i++) {
-                const barH = 12 + Math.abs(Math.sin(phase * 0.8 + i * 0.35)) * (canvas.height * 0.45 * (targetScore / 100));
-                ctx.fillStyle = 'rgba(0, 245, 212, 0.12)';
+                const barH = 10 + Math.abs(Math.sin(phase * 0.8 + i * 0.35)) * (canvas.height * 0.55 * scoreRatio);
+                ctx.fillStyle = 'rgba(0, 245, 212, 0.14)';
                 ctx.fillRect(i * (barWidth + 4), canvas.height - barH, barWidth, barH);
             }
 
             const waves = [
-                { color: '#00f5d4', width: 2.4, freq: 0.024, amp: 28 },
-                { color: '#39ff14', width: 1.6, freq: 0.038, amp: 18 },
-                { color: '#00bbff', width: 1.3, freq: 0.016, amp: 14 }
+                { color: '#00f5d4', width: 2.4, freq: 0.024, amp: 32 * scoreRatio },
+                { color: '#39ff14', width: 1.6, freq: 0.038, amp: 22 * scoreRatio },
+                { color: '#00bbff', width: 1.3, freq: 0.016, amp: 16 * scoreRatio }
             ];
 
             waves.forEach((w, idx) => {
@@ -769,14 +819,13 @@ def render_interactive_hud_graph(score=85):
             ctx.fillStyle = grad;
             ctx.fillRect(scanX - 20, 0, 25, canvas.height);
 
-            phase += isHovering ? 0.14 : 0.06;
+            phase += isHovering ? 0.14 : (0.04 + 0.04 * scoreRatio);
             requestAnimationFrame(drawWave);
         }
         drawWave();
     })();
     </script>
-    """.replace("SCORE_VAL", str(score))
-    
+    """
     components.html(html_code, height=205)
 
 
