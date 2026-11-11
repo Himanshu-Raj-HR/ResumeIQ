@@ -247,24 +247,127 @@ def load_futuristic_animations():
     })();
     </script>
     """, height=0)
+#-------------------------------------------------------------------------------------------------------------------------------
 
-
-def render_futuristic_header(title="RESUMEIQ // AI NEURAL CORE"):
-    """Renders a cyberpunk glass header along with an always-playing reactive telemetry graph."""
-    bars_html = "".join(
-        [f'<div class="eq-bar" style="animation-delay: {(i * 0.1) % 0.9:.1f}s;"></div>' for i in range(18)]
-    )
-    st.markdown(f"""
-        <div class="telemetry-box">
-            <div style="border-left: 4px solid #00f5d4; padding-left: 14px;">
-                <h2 style="color: #f0f2f6; font-family: monospace; letter-spacing: 2px; margin: 0; font-size: 1.5rem;">{title}</h2>
-                <p style="color: #00f5d4; font-family: monospace; font-size: 12px; margin: 4px 0 0 0; display: flex; align-items: center;">
-                    <span class="live-dot"></span>SYS_STATUS: ONLINE // NEURAL GRAPH ACTIVE
-                </p>
+def render_interactive_hud_graph(score=85):
+    """Renders an always-playing, mouse-sensitive futuristic sine-wave & radar HUD graph."""
+    html_code = """
+    <div id="hud-container" style="
+        background: rgba(14, 20, 30, 0.55);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(0, 245, 212, 0.3);
+        border-radius: 16px;
+        padding: 16px 20px;
+        color: #e0fbfc;
+        font-family: monospace;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    ">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div>
+                <span style="color: #00f5d4; font-weight: bold; font-size: 14px; letter-spacing: 1.5px;">
+                    ⚡ NEURAL ATS TELEMETRY // REAL-TIME WAVEFORM
+                </span>
+                <div style="font-size: 11px; color: #8b949e; margin-top: 2px;">
+                    MOVE CURSOR ACROSS GRAPH TO MODULATE FREQUENCY
+                </div>
             </div>
-            <div style="text-align: right;">
-                <div class="eq-bars">{bars_html}</div>
-                <span style="font-family: monospace; font-size: 10px; color: #00adb5;">LIVE TELEMETRY // HOVER TO BOOST</span>
+            <div style="
+                background: rgba(0, 245, 212, 0.12);
+                border: 1px solid #00f5d4;
+                padding: 6px 12px;
+                border-radius: 8px;
+                font-size: 16px;
+                font-weight: bold;
+                color: #39ff14;
+                box-shadow: 0 0 12px rgba(0, 245, 212, 0.3);
+            ">
+                INDEX: SCORE_VAL%
             </div>
         </div>
-    """, unsafe_allow_html=True)
+        <canvas id="waveCanvas" height="110" style="width: 100%; display: block; cursor: crosshair;"></canvas>
+    </div>
+
+    <script>
+    (function() {
+        const canvas = document.getElementById('waveCanvas');
+        const container = document.getElementById('hud-container');
+        const ctx = canvas.getContext('2d');
+        
+        function resize() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = 110;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        let phase = 0;
+        let mouseX = 0.5;
+        let mouseY = 0.5;
+        let isHovering = false;
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = (e.clientX - rect.left) / canvas.width;
+            mouseY = (e.clientY - rect.top) / canvas.height;
+            isHovering = true;
+            container.style.borderColor = '#00f5d4';
+            container.style.boxShadow = '0 0 25px rgba(0, 245, 212, 0.35)';
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            isHovering = false;
+            mouseY = 0.5;
+            container.style.borderColor = 'rgba(0, 245, 212, 0.3)';
+            container.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4)';
+        });
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = 'rgba(0, 173, 181, 0.1)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 30) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 25) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+
+            const waves = [
+                { color: '#00f5d4', width: 2.2, freq: 0.025, amp: 28, speed: 0.06 },
+                { color: '#00adb5', width: 1.5, freq: 0.04,  amp: 18, speed: -0.04 },
+                { color: '#39ff14', width: 1.2, freq: 0.015, amp: 12, speed: 0.08 }
+            ];
+
+            waves.forEach((w, idx) => {
+                ctx.beginPath();
+                const dynamicAmp = isHovering ? w.amp * (1.6 - mouseY) : w.amp;
+                const dynamicFreq = isHovering ? w.freq * (0.7 + mouseX) : w.freq;
+
+                for (let x = 0; x < canvas.width; x++) {
+                    const y = canvas.height / 2 + 
+                              Math.sin(x * dynamicFreq + phase * (idx + 1)) * dynamicAmp * Math.sin(x / canvas.width * Math.PI);
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.strokeStyle = w.color;
+                ctx.lineWidth = w.width;
+                ctx.shadowBlur = isHovering ? 12 : 4;
+                ctx.shadowColor = w.color;
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            });
+
+            phase += isHovering ? 0.14 : 0.05;
+            requestAnimationFrame(draw);
+        }
+        draw();
+    })();
+    </script>
+    """.replace("SCORE_VAL", str(score))
+    
+    components.html(html_code, height=195)
