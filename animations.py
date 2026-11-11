@@ -560,8 +560,169 @@ def load_futuristic_animations():
         if (parentWin.__cyberFixInterval) clearInterval(parentWin.__cyberFixInterval);
         parentWin.__cyberFixInterval = setInterval(fixSkillsAndAnimateDashboard, 500);
     })();
+    projected.forEach((p) => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, Math.max(1.2, 2.8 * p.scale), 0, Math.PI * 2);
+                    ctx.fillStyle = p.z > 0 ? '#00f5d4' : 'rgba(0, 173, 181, 0.45)';
+                    ctx.fill();
+                });
+                parentWin.requestAnimationFrame(renderNeuralMesh);
+            }
+            parentWin.requestAnimationFrame(renderNeuralMesh);
+        }
+
+        // =========================================================================
+        // D. 5-SECOND SIDEBAR AUTO-MINIMIZER INTO ANIMATED CYBER HUD BOX
+        // =========================================================================
+        function setupSidebarAutoMinimizer() {
+            const sidebar = parentDoc.querySelector('[data-testid="stSidebar"]');
+            if (!sidebar) return;
+
+            sidebar.style.display = 'block';
+            sidebar.style.transition = 'transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease';
+
+            let launcher = parentDoc.getElementById('cyber-hud-launcher');
+            if (!launcher) {
+                const launcherStyle = parentDoc.createElement('style');
+                launcherStyle.id = 'cyber-hud-launcher-style';
+                launcherStyle.innerHTML = `
+                    @keyframes hudPulseGlow {
+                        0%, 100% { box-shadow: 0 0 18px rgba(0, 245, 212, 0.45), inset 0 0 10px rgba(0, 245, 212, 0.2); border-color: #00f5d4; }
+                        50% { box-shadow: 0 0 32px rgba(57, 255, 20, 0.75), inset 0 0 16px rgba(57, 255, 20, 0.3); border-color: #39ff14; }
+                    }
+                    @keyframes hudSpinIcon {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                    #cyber-hud-launcher {
+                        position: fixed;
+                        top: 18px;
+                        left: 18px;
+                        z-index: 999999;
+                        background: linear-gradient(135deg, rgba(8, 15, 26, 0.92), rgba(0, 45, 55, 0.88));
+                        backdrop-filter: blur(16px);
+                        border: 1.5px solid #00f5d4;
+                        clip-path: polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px);
+                        padding: 10px 18px;
+                        color: #ffffff;
+                        font-family: 'Orbitron', sans-serif;
+                        font-size: 12px;
+                        font-weight: 700;
+                        letter-spacing: 1.5px;
+                        cursor: pointer;
+                        display: none;
+                        align-items: center;
+                        gap: 10px;
+                        animation: hudPulseGlow 2.5s infinite ease-in-out;
+                        transition: transform 0.25s ease, opacity 0.3s ease;
+                        user-select: none;
+                    }
+                    #cyber-hud-launcher:hover {
+                        transform: scale(1.06) translateY(-2px);
+                        background: linear-gradient(135deg, #00f5d4, #00adb5);
+                        color: #04080e;
+                    }
+                    #cyber-hud-launcher .hud-gear {
+                        display: inline-block;
+                        font-size: 16px;
+                        animation: hudSpinIcon 6s linear infinite;
+                    }
+                    .cyber-sidebar-minimized {
+                        transform: translateX(-110%) !important;
+                        opacity: 0 !important;
+                        pointer-events: none !important;
+                        position: fixed !important;
+                    }
+                `;
+                parentDoc.head.appendChild(launcherStyle);
+
+                launcher = parentDoc.createElement('div');
+                launcher.id = 'cyber-hud-launcher';
+                launcher.innerHTML = `
+                    <span class="hud-gear">⚙️</span>
+                    <div>
+                        <div style="font-size:11px; color:#00f5d4; font-family:'Orbitron',sans-serif;">COMMAND PORTAL</div>
+                        <div style="font-size:9px; color:#39ff14; font-family:'JetBrains Mono',monospace; letter-spacing:1px;">ADMIN // FEEDBACK // NAV</div>
+                    </div>
+                `;
+                parentDoc.body.appendChild(launcher);
+            }
+
+            let timerBanner = sidebar.querySelector('#cyber-sidebar-timer');
+            if (!timerBanner) {
+                timerBanner = parentDoc.createElement('div');
+                timerBanner.id = 'cyber-sidebar-timer';
+                timerBanner.style.cssText = 'background:rgba(0,245,212,0.1);border:1px solid rgba(0,245,212,0.4);border-radius:8px;padding:8px 12px;margin:10px 12px;font-family:JetBrains Mono,monospace;font-size:11px;color:#00f5d4;display:flex;justify-content:space-between;align-items:center;';
+                timerBanner.innerHTML = `
+                    <span id="cyber-timer-text">⚡ AUTO-MINIMIZE: 5s</span>
+                    <button id="cyber-min-now" style="background:rgba(0,245,212,0.2);border:1px solid #00f5d4;color:#fff;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:10px;">HIDE ✕</button>
+                `;
+                sidebar.prepend(timerBanner);
+            }
+
+            function minimizeSidebar() {
+                sidebar.classList.add('cyber-sidebar-minimized');
+                launcher.style.display = 'flex';
+            }
+
+            function expandSidebar() {
+                sidebar.classList.remove('cyber-sidebar-minimized');
+                launcher.style.display = 'none';
+                startCountdown(5);
+            }
+
+            launcher.onclick = () => { expandSidebar(); };
+
+            const minBtn = sidebar.querySelector('#cyber-min-now');
+            if (minBtn) {
+                minBtn.onclick = () => {
+                    if (parentWin.__sidebarCountdownInterval) clearInterval(parentWin.__sidebarCountdownInterval);
+                    minimizeSidebar();
+                };
+            }
+
+            if (!sidebar.dataset.hoverBound) {
+                sidebar.dataset.hoverBound = 'true';
+                sidebar.addEventListener('mouseenter', () => {
+                    parentWin.__sidebarHovered = true;
+                    const txt = sidebar.querySelector('#cyber-timer-text');
+                    if (txt) txt.textContent = '🔒 PANEL LOCKED (ACTIVE)';
+                });
+                sidebar.addEventListener('mouseleave', () => {
+                    parentWin.__sidebarHovered = false;
+                    startCountdown(5);
+                });
+            }
+
+            function startCountdown(seconds) {
+                if (parentWin.__sidebarCountdownInterval) clearInterval(parentWin.__sidebarCountdownInterval);
+                let remaining = seconds;
+                const txt = sidebar.querySelector('#cyber-timer-text');
+                if (txt) txt.textContent = `⚡ AUTO-MINIMIZE: ${remaining}s`;
+
+                parentWin.__sidebarCountdownInterval = setInterval(() => {
+                    if (parentWin.__sidebarHovered) return;
+                    remaining -= 1;
+                    if (txt && remaining > 0) {
+                        txt.textContent = `⚡ AUTO-MINIMIZE: ${remaining}s`;
+                    }
+                    if (remaining <= 0) {
+                        clearInterval(parentWin.__sidebarCountdownInterval);
+                        minimizeSidebar();
+                    }
+                }, 1000);
+            }
+
+            if (!parentWin.__sidebarInitialized) {
+                parentWin.__sidebarInitialized = true;
+                expandSidebar();
+            }
+        }
+        setupSidebarAutoMinimizer();
+    })();
     </script>
     """, height=0)
+    
 
 
 def render_futuristic_header(title="RESUMEIQ // AI NEURAL CORE"):

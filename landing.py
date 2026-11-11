@@ -4,14 +4,13 @@ import streamlit.components.v1 as components
 import streamlit as st
 import streamlit.components.v1 as components
 
+import streamlit as st
+import streamlit.components.v1 as components
+
 def render_landing_page():
-    """Renders the full-screen cyberpunk 3D landing page and ensures sidebar is hidden on landing."""
+    """Renders the full-screen cyberpunk 3D landing page."""
     st.markdown("""
     <style>
-        /* Hide sidebar ONLY on the landing page */
-        [data-testid="stSidebar"], [data-testid="collapsedControl"] {
-            display: none !important;
-        }
         .block-container {
             padding-top: 1.5rem !important;
             padding-bottom: 2rem !important;
