@@ -113,19 +113,22 @@ def show_pdf(file_path):
     with open(file_path, "rb") as f:
         pdf_bytes = f.read()
         base64_pdf = base64.b64encode(pdf_bytes).decode('utf-8')
-    
-    # Use <embed> instead of <iframe> so Chrome/Safari don't block the PDF preview
+
     pdf_display = f'''
-        <embed 
-            src="data:application/pdf;base64,{base64_pdf}#toolbar=0&navpanes=0&scrollbar=0" 
-            width="100%" 
-            height="800px" 
-            type="application/pdf"
-            style="border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);"
-        />
+        <object data="data:application/pdf;base64,{base64_pdf}" type="application/pdf" width="100%" height="700px">
+            <p>Your browser blocked inline PDF preview. 
+               <a href="data:application/pdf;base64,{base64_pdf}" download="resume.pdf" target="_blank">Click here to download/view the resume</a>.
+            </p>
+        </object>
     '''
     st.markdown(pdf_display, unsafe_allow_html=True)
-
+    st.download_button(
+        label="📄 Download / View Uploaded Resume",
+        data=pdf_bytes,
+        file_name=os.path.basename(file_path),
+        mime="application/pdf",
+        key="pdf_download_preview_btn"
+    )
 
 def course_recommender(course_list):
     st.subheader("**Courses & Certificates Recommendations 👨‍🎓**")
@@ -379,7 +382,7 @@ def run():
         st.markdown('''<h5 style='text-align: left; color: #021659;'> Upload Your Resume, And Get Smart Recommendations</h5>''', unsafe_allow_html=True)
 
         pdf_file = st.file_uploader("Choose your Resume", type=["pdf"])
-        
+
         if pdf_file is not None:
             with st.spinner('Hang On While We Cook Magic For You...'):
                 time.sleep(2)
@@ -556,13 +559,12 @@ def run():
                 else:
                     cand_level = "Fresher"
                     st.markdown('''<h4 style='text-align: left; color: #fba171;'>You are at Fresher level!!</h4>''', unsafe_allow_html=True)
-
-                st.subheader("**Skills Recommendation 💡**")
+st.subheader("**Skills Recommendation 💡**")
                 keywords = st_tags(
                     label='### Your Current Skills',
                     text='See our skills recommendation below',
                     value=resume_data.get('skills', []),
-                    key='1'
+                    key='user_resume_current_skills_tags'
                 )
 
                 ds_keyword = ['tensorflow', 'keras', 'pytorch', 'machine learning', 'deep learning', 'flask', 'streamlit']
@@ -576,12 +578,12 @@ def run():
                 reco_field = ''
                 rec_course = ''
 
-                for i in resume_data.get('skills', []):
+                for i in (resume_data.get('skills') or []):
                     if i.lower() in ds_keyword:
                         reco_field = 'Data Science'
                         st.success("** Our analysis says you are looking for Data Science Jobs.**")
                         recommended_skills = ['Data Visualization', 'Predictive Analysis', 'Statistical Modeling', 'Data Mining', 'Clustering & Classification', 'Data Analytics', 'Quantitative Analysis', 'Web Scraping', 'ML Algorithms', 'Keras', 'Pytorch', 'Probability', 'Scikit-learn', 'Tensorflow', 'Flask', 'Streamlit']
-                        st_tags(label='### Recommended skills for you.', text='Recommended skills generated from System', value=recommended_skills, key='2')
+                        st_tags(label='### Recommended skills for you.', text='Recommended skills generated from System', value=recommended_skills, key='ds_recommended_skills_tags')
                         st.markdown('''<h5 style='text-align: left; color: #1ed760;'>Adding this skills to resume will boost🚀 the chances of getting a Job</h5>''', unsafe_allow_html=True)
                         rec_course = course_recommender(ds_course)
                         break
@@ -590,7 +592,7 @@ def run():
                         reco_field = 'Web Development'
                         st.success("** Our analysis says you are looking for Web Development Jobs **")
                         recommended_skills = ['React', 'Django', 'Node JS', 'React JS', 'php', 'laravel', 'Magento', 'wordpress', 'Javascript', 'Angular JS', 'c#', 'Flask', 'SDK']
-                        st_tags(label='### Recommended skills for you.', text='Recommended skills generated from System', value=recommended_skills, key='3')
+                        st_tags(label='### Recommended skills for you.', text='Recommended skills generated from System', value=recommended_skills, key='web_recommended_skills_tags')
                         st.markdown('''<h5 style='text-align: left; color: #1ed760;'>Adding this skills to resume will boost🚀 the chances of getting a Job💼</h5>''', unsafe_allow_html=True)
                         rec_course = course_recommender(web_course)
                         break
@@ -599,7 +601,7 @@ def run():
                         reco_field = 'Android Development'
                         st.success("** Our analysis says you are looking for Android App Development Jobs **")
                         recommended_skills = ['Android', 'Android development', 'Flutter', 'Kotlin', 'XML', 'Java', 'Kivy', 'GIT', 'SDK', 'SQLite']
-                        st_tags(label='### Recommended skills for you.', text='Recommended skills generated from System', value=recommended_skills, key='4')
+                        st_tags(label='### Recommended skills for you.', text='Recommended skills generated from System', value=recommended_skills, key='android_recommended_skills_tags')
                         st.markdown('''<h5 style='text-align: left; color: #1ed760;'>Adding this skills to resume will boost🚀 the chances of getting a Job💼</h5>''', unsafe_allow_html=True)
                         rec_course = course_recommender(android_course)
                         break
@@ -608,7 +610,7 @@ def run():
                         reco_field = 'IOS Development'
                         st.success("** Our analysis says you are looking for IOS App Development Jobs **")
                         recommended_skills = ['IOS', 'IOS Development', 'Swift', 'Cocoa', 'Cocoa Touch', 'Xcode', 'Objective-C', 'SQLite', 'Plist', 'StoreKit', 'UI-Kit', 'AV Foundation', 'Auto-Layout']
-                        st_tags(label='### Recommended skills for you.', text='Recommended skills generated from System', value=recommended_skills, key='5')
+                        st_tags(label='### Recommended skills for you.', text='Recommended skills generated from System', value=recommended_skills, key='ios_recommended_skills_tags')
                         st.markdown('''<h5 style='text-align: left; color: #1ed760;'>Adding this skills to resume will boost🚀 the chances of getting a Job💼</h5>''', unsafe_allow_html=True)
                         rec_course = course_recommender(ios_course)
                         break
@@ -617,7 +619,7 @@ def run():
                         reco_field = 'UI-UX Development'
                         st.success("** Our analysis says you are looking for UI-UX Development Jobs **")
                         recommended_skills = ['UI', 'User Experience', 'Adobe XD', 'Figma', 'Zeplin', 'Balsamiq', 'Prototyping', 'Wireframes', 'Storyframes', 'Adobe Photoshop', 'Editing', 'Illustrator', 'After Effects', 'Premier Pro', 'Indesign', 'Wireframe', 'Solid', 'Grasp', 'User Research']
-                        st_tags(label='### Recommended skills for you.', text='Recommended skills generated from System', value=recommended_skills, key='6')
+                        st_tags(label='### Recommended skills for you.', text='Recommended skills generated from System', value=recommended_skills, key='uiux_recommended_skills_tags')
                         st.markdown('''<h5 style='text-align: left; color: #1ed760;'>Adding this skills to resume will boost🚀 the chances of getting a Job💼</h5>''', unsafe_allow_html=True)
                         rec_course = course_recommender(uiux_course)
                         break
@@ -626,11 +628,12 @@ def run():
                         reco_field = 'NA'
                         st.warning("** Currently our tool only predicts and recommends for Data Science, Web, Android, IOS and UI/UX Development**")
                         recommended_skills = ['No Recommendations']
-                        st_tags(label='### Recommended skills for you.', text='Currently No Recommendations', value=recommended_skills, key='7')
+                        st_tags(label='### Recommended skills for you.', text='Currently No Recommendations', value=recommended_skills, key='na_recommended_skills_tags')
                         st.markdown('''<h5 style='text-align: left; color: #092851;'>Maybe Available in Future Updates</h5>''', unsafe_allow_html=True)
                         rec_course = "Sorry! Not Available for this Field"
                         break
 
+                    
                 ## ResumeIQ Executive ATS Dashboard & Scoring Engine
                 st.markdown("""
                     <style>
