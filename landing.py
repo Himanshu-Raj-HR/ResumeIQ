@@ -1,4 +1,4 @@
-def render_futuristic_landing_page():
+def render_landing_page():
     """Renders a full-screen, heavy-animation 3D cyberpunk landing page for ResumeIQ."""
     
     # Hide the sidebar on the landing page for a true full-screen web experience
