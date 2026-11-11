@@ -35,6 +35,8 @@ import nltk
 # IMPORT CUSTOM ANIMATIONS & UI MODULES
 # ==========================================
 from animations import load_futuristic_animations, render_futuristic_header 
+from animations import load_futuristic_animations, render_futuristic_header, render_interactive_hud_graph
+
 
 # ==========================================
 # 1. NLTK DEPENDENCY GUARD
@@ -292,7 +294,7 @@ def run():
     # HIGH-IMPACT UI THEME INJECTION (CSS)
     # ==========================================
     load_futuristic_animations()
-
+    render_cyberpunk_title_intro()
     st.markdown("""
     <style>
         /* Global Dark Theme & Background */
@@ -331,7 +333,7 @@ def run():
         }
     </style>
     """, unsafe_allow_html=True)
-
+    
     if os.path.exists('./Logo/RESUM.png'):
         img = Image.open('./Logo/RESUM.png')
         st.image(img)
@@ -464,6 +466,12 @@ def run():
                 resume_text = pdf_reader(save_image_path)
 
                 render_futuristic_header("RESUME ANALYSIS // NEURAL EVALUATION")
+                
+                # --- PASTE RIGHT HERE ---
+                current_score = score if 'score' in locals() else 85
+                render_interactive_hud_graph(current_score)
+                # ------------------------
+
                 st.success("Hello " + str(resume_data.get('name', '')))
                 st.subheader("**Your Basic info 👀**")
                 try:
@@ -473,7 +481,7 @@ def run():
                     st.text('Degree: ' + str(resume_data.get('degree', '')))
                     st.text('Resume pages: ' + str(resume_data.get('no_of_pages', 1)))
                 except Exception:
-                    pass
+                    pass 
 
                 cand_level = ''
                 if resume_data.get('no_of_pages', 1) < 1:
